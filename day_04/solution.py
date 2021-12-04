@@ -67,7 +67,6 @@ def solve_part_1(nums, boards):
 
 def solve_part_2(nums, boards):
     winner = None
-    lastest_num = -1
     winners = set()
 
     for num in nums:
@@ -75,10 +74,9 @@ def solve_part_2(nums, boards):
         winner = find_winner(boards, winners)
         
         if len(winners) == len(boards):
-            lastest_num = num
-            break
+            return sum(get_unmarked_nums(winner)) * num
 
-    return -1 if not winner else sum(get_unmarked_nums(winner)) * lastest_num
+    return -1 
 
 if __name__ == '__main__':
     with open('input_01.txt') as f:
