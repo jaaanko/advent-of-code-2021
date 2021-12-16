@@ -1,5 +1,16 @@
 from math import prod
 
+OPS = [
+    sum,
+    prod,
+    min,
+    max,
+    None,
+    lambda x : 1 if x[0] > x[1] else 0,
+    lambda x : 1 if x[0] < x[1] else 0,
+    lambda x : 1 if x[0] == x[1] else 0,
+]
+
 def get_version(packet, offset = 0):
     return int(packet[offset:offset + 3], 2)
 
@@ -29,30 +40,6 @@ def get_end_of_literal(packet, offset = 0):
             return i + 5
     
     return -1
-
-def apply_operation(type_id, nums):
-    if type_id == 0:
-        return sum(nums)
-
-    if type_id == 1:
-        return prod(nums)
-    
-    if type_id == 2:
-        return min(nums)
-
-    if type_id == 3:
-        return max(nums)
-    
-    if type_id == 5:
-        return 1 if nums[0] > nums[1] else 0
-    
-    if type_id == 6:
-        return 1 if nums[0] < nums[1] else 0
-
-    if type_id == 7:
-        return 1 if nums[0] == nums[1] else 0
-    
-    return 0
 
 def helper(packet, offset = 0):
     version_total = get_version(packet, offset)
@@ -85,7 +72,7 @@ def helper(packet, offset = 0):
             version_total += version
             offset = end     
 
-    return end, version_total, apply_operation(get_type_id(packet[initial_offset:]), results) 
+    return end, version_total, OPS[get_type_id(packet, initial_offset)](results)
 
 def hex_to_binary(hex):
     binary = bin(int(hex, 16))[2:]
