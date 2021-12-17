@@ -1,8 +1,13 @@
-def can_visit_target(x_velocity, y_velocity, lower_x, upper_x, lower_y, upper_y):
+from collections import namedtuple
+
+Area = namedtuple('Area', ['lower_x', 'upper_x', 'lower_y', 'upper_y'])
+
+
+def can_visit_target(x_velocity, y_velocity, target):
     x = y = 0
 
-    while x <= upper_x and y >= lower_y:
-        if lower_x <= x <= upper_x and lower_y <= y <= upper_y:
+    while x <= target.upper_x and y >= target.lower_y:
+        if target.lower_x <= x <= target.upper_x and target.lower_y <= y <= target.upper_y:
             return True
 
         x += x_velocity
@@ -21,24 +26,24 @@ def get_min_x_velocity(lower_x, upper_x):
     return -1
 
 
-def solve_part_1(lower_x, upper_x, lower_y, upper_y):
-    min_x_velocity = get_min_x_velocity(lower_x, upper_x)
+def solve_part_1(target):
+    min_x_velocity = get_min_x_velocity(target.lower_x, target.upper_x)
     max_y_velocity = 0
 
-    for y_velocity in range(lower_y, abs(lower_y)):
-        if can_visit_target(min_x_velocity, y_velocity, lower_x, upper_x, lower_y, upper_y):
+    for y_velocity in range(target.lower_y, abs(target.lower_y)):
+        if can_visit_target(min_x_velocity, y_velocity, target):
             max_y_velocity = max(max_y_velocity, y_velocity)
 
     return max_y_velocity * (max_y_velocity + 1) // 2
 
 
-def solve_part_2(lower_x, upper_x, lower_y, upper_y):
-    min_x_velocity = get_min_x_velocity(lower_x, upper_x)
+def solve_part_2(target):
+    min_x_velocity = get_min_x_velocity(target.lower_x, target.upper_x)
     count = 0
 
-    for x in range(min_x_velocity, upper_x + 1):
-        for y in range(lower_y, abs(lower_y)):
-            count += can_visit_target(x, y, lower_x, upper_x, lower_y, upper_y)
+    for x in range(min_x_velocity, target.upper_x + 1):
+        for y in range(target.lower_y, abs(target.lower_y)):
+            count += can_visit_target(x, y, target)
 
     return count
 
@@ -54,5 +59,7 @@ if __name__ == '__main__':
         lower_y, upper_y = y_coords.split('..')
         lower_y, upper_y = int(lower_y[2:]), int(upper_y)
 
-        print(solve_part_1(lower_x, upper_x, lower_y, upper_y))
-        print(solve_part_2(lower_x, upper_x, lower_y, upper_y))
+        target = Area(lower_x, upper_x, lower_y, upper_y)
+
+        print(solve_part_1(target))
+        print(solve_part_2(target))
