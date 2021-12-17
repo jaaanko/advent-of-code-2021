@@ -6,21 +6,25 @@ OPS = [
     min,
     max,
     None,
-    lambda x : 1 if x[0] > x[1] else 0,
-    lambda x : 1 if x[0] < x[1] else 0,
-    lambda x : 1 if x[0] == x[1] else 0,
+    lambda x: 1 if x[0] > x[1] else 0,
+    lambda x: 1 if x[0] < x[1] else 0,
+    lambda x: 1 if x[0] == x[1] else 0,
 ]
 
-def get_version(packet, offset = 0):
+
+def get_version(packet, offset=0):
     return int(packet[offset:offset + 3], 2)
 
-def get_type_id(packet, offset = 0):
+
+def get_type_id(packet, offset=0):
     return int(packet[offset + 3:offset + 6], 2)
 
-def get_len_type_id(packet, offset = 0):
+
+def get_len_type_id(packet, offset=0):
     return int(packet[offset + 6])
 
-def get_literal_value(packet, offset = 0):
+
+def get_literal_value(packet, offset=0):
     n = len(packet)
 
     curr = []
@@ -29,19 +33,22 @@ def get_literal_value(packet, offset = 0):
         if packet[i] == '0':
             break
 
-    return int(''.join(curr), 2) 
+    return int(''.join(curr), 2)
 
-def is_literal(packet, offset = 0):
-    return get_type_id(packet, offset) == 4   
 
-def get_end_of_literal(packet, offset = 0):
+def is_literal(packet, offset=0):
+    return get_type_id(packet, offset) == 4
+
+
+def get_end_of_literal(packet, offset=0):
     for i in range(offset + 6, len(packet), 5):
         if packet[i] == '0':
             return i + 5
-    
+
     return -1
 
-def helper(packet, offset = 0):
+
+def helper(packet, offset=0):
     version_total = get_version(packet, offset)
 
     if is_literal(packet, offset):
@@ -61,7 +68,7 @@ def helper(packet, offset = 0):
             results.append(expr_res)
             version_total += version
             total_len -= end - offset
-            offset = end 
+            offset = end
     else:
         total_count = int(packet[offset + 7:offset + 18], 2)
         offset += 18
@@ -70,9 +77,10 @@ def helper(packet, offset = 0):
             end, version, expr_res = helper(packet, offset)
             results.append(expr_res)
             version_total += version
-            offset = end     
+            offset = end
 
     return end, version_total, OPS[get_type_id(packet, initial_offset)](results)
+
 
 def hex_to_binary(hex):
     binary = bin(int(hex, 16))[2:]
@@ -82,15 +90,18 @@ def hex_to_binary(hex):
 
     return binary
 
+
 def solve_part_1(packet):
     return helper(packet)[1]
 
+
 def solve_part_2(packet):
     return helper(packet)[2]
+
 
 if __name__ == '__main__':
     with open('input_01.txt') as f:
         packet = hex_to_binary(f.readline().strip())
 
         print(solve_part_1(packet))
-        print(solve_part_2(packet))    
+        print(solve_part_2(packet))
