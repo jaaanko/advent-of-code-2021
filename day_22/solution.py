@@ -51,16 +51,8 @@ def get_intersection(cuboid_1, cuboid_2):
 
     min_z = max(cuboid_1.min_z, cuboid_2.min_z)
     max_z = min(cuboid_1.max_z, cuboid_2.max_z)
-
-    sign = cuboid_1.sign * cuboid_2.sign
-
-    if cuboid_1.sign == cuboid_2.sign:
-        sign = -cuboid_1.sign
-
-    elif cuboid_1.sign == 1 and cuboid_2.sign == -1:
-        sign = 1
-
-    return Cuboid(min_x, max_x, min_y, max_y, min_z, max_z, sign)
+    
+    return Cuboid(min_x, max_x, min_y, max_y, min_z, max_z, -cuboid_2.sign)
 
 
 def get_volume(cuboid):
